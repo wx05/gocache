@@ -4,9 +4,9 @@
 
 ## lru 实现
 思路：
-1、使用双向链表 和 hash table 来实现，其中，hash table 主要是 查找效率为O(1), hash table 则为了方便将最近访问的数据放在最前面 
+1、使用双向链表 和 hash table 来实现，其中，hash table 主要是 查找效率为O(1), hash table 则为了方便查找 lru链表里面的数据节点 
 
-2、双向链表里面存储的是entry结构体，里面存储具体的数据，hash table key是存储的key，value是指向 hash table node 节点的指针
+2、双向链表里面存储的是entry结构体，里面存储具体的数据，hash table key是存储的key，value是指向 hash table node 节点的指针，双向链表的作用是为了挪动节点，进行最远未使用的节点的淘汰
 
 ## 差异点:
 1、我在实现时，考虑到线程安全，故而，在Cache结构体里面加了一个 lock sync.Mutex 的成员，来加锁
