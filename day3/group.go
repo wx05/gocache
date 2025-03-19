@@ -1,4 +1,4 @@
-package day2
+package day3
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ func (f GetterFunc) Get(key string) ([]byte, error) {
 
 type Group struct {
 	name      string
-	getter    Getter //实现Getter 这个interface里面的Get方法
+	getter    Getter
 	mainCache cache
 }
 
@@ -47,7 +47,7 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	g := &Group{
 		name:      name,
 		mainCache: cache{cacheBytes: cacheBytes},
-		getter:    getter, //传进来的getter，里面实现了 get方法，这个函数可以自己实现，比如在本地文件读取或者与其他服务器交互获取数据
+		getter:    getter,
 	}
 
 	group[name] = g
@@ -67,12 +67,10 @@ func (g *Group) Get(key string) (ByteView, error) {
 		return ByteView{}, fmt.Errorf("key can't be nil")
 	}
 
-	//先去缓存里面查找
 	if v, ok := g.mainCache.get(key); ok == nil {
 		return v, ok
 	}
 
-	//去本地load
 	return g.load(key)
 }
 
