@@ -1,0 +1,14 @@
+[
+  {
+    "group":"scores",
+    "data":[
+      {
+        "key": "Tom",
+        "value": 90
+      },{
+        "key": "Jack",
+        "value": 80
+      }
+    ]
+  }
+]
