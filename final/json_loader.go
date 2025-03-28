@@ -8,16 +8,11 @@ import (
 type JsonLoader struct{}
 
 type GroupData struct {
-	Group string     `json:"group"`
-	Data  []KeyValue `json:"data"`
+	Group string            `json:"group"`
+	Data  map[string]string `json:"data"`
 }
 
-type KeyValue struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
-}
-
-func (j *JsonLoader) Load(c *Config) ([]map[string]interface{}, error) {
+func (j *JsonLoader) Load(c *Config, peer *HTTPPool) ([]*Group, error) {
 	data, err := os.ReadFile(c.PreTask.FilePath)
 	if err != nil {
 		return nil, err
@@ -29,5 +24,18 @@ func (j *JsonLoader) Load(c *Config) ([]map[string]interface{}, error) {
 		return nil, err
 	}
 
-	return make([]map[string]interface{}, 0), nil
+	var groupList []*Group
+	for _, v := range jsonData {
+		group := CreateGroup(c, v)
+		groupList = append(groupList, group)
+
+		//仅仅只在数据被选择的节点进行初始化
+		for k1, v1 := range v.Data {
+			if ok := peer.IsSelf(k1); ok == true && group.name == v.Group {
+				group.mainCache.add(k1, ByteView{b: []byte(v1)})
+			}
+		}
+	}
+
+	return groupList, nil
 }

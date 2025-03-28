@@ -94,6 +94,14 @@ func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	return nil, false
 }
 
+func (p *HTTPPool) IsSelf(key string) bool {
+	peer := p.peers.Get(key)
+	if peer != "" && peer != p.self {
+		return false
+	}
+	return true
+}
+
 var _ peerPicker = (*HTTPPool)(nil) //鸭子类型（Duck Typing） 设计模式，只要一个类型实现了接口的所有方法，Go语言就认为该类型实现了该接口。也可以进行隐形类型转换。
 
 // 缓存服务器对外的接口

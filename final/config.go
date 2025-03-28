@@ -24,6 +24,7 @@ type ServerConfig struct {
 	MaxCacheBytes int64  `yaml:"max_cache_bytes"`
 	BasePath      string `yaml:"base_path"`
 	Replicas      int    `yaml:"replicas"`
+	DefalutGroup  string `yaml:"default_group"` //默认节点名称
 }
 
 func LoadConfig(path string) (*Config, error) {

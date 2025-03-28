@@ -59,6 +59,16 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	return g
 }
 
+func CreateGroup(c *Config, g GroupData) *Group {
+	return NewGroup(g.Group, c.Server.MaxCacheBytes, GetterFunc(func(key string) ([]byte, error) {
+		log.Println("[SlowDb] search key", key)
+		if v, ok := Db[key]; ok {
+			return []byte(v), nil
+		}
+		return nil, fmt.Errorf("%s not exists", key)
+	}))
+}
+
 func GetGroup(name string) *Group {
 	mu.RLock()
 	g := group[name]
@@ -72,7 +82,7 @@ func (g *Group) Get(key string) (ByteView, error) {
 		return ByteView{}, fmt.Errorf("key can't be nil")
 	}
 
-	if v, ok := g.mainCache.get(key); ok == nil { //从本地的lru列表获取
+	if v, ok := g.mainCache.get(key); ok == nil && v.Len() != 0 { //从本地的lru列表获取
 		return v, ok
 	}
 

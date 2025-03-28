@@ -2,6 +2,7 @@ server:
   max_cache_bytes: 2048
   base_path: "/_gocache/"
   replicas: 50
+  default_group: "default"
 preTask:
   data_type: "json"
   file_path: "./data.json"
