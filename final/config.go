@@ -21,10 +21,11 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	MaxCacheBytes int64  `yaml:"max_cache_bytes"`
-	BasePath      string `yaml:"base_path"`
-	Replicas      int    `yaml:"replicas"`
-	DefalutGroup  string `yaml:"default_group"` //默认节点名称
+	MaxCacheBytes  int64  `yaml:"max_cache_bytes"`
+	BasePath       string `yaml:"base_path"`
+	Replicas       int    `yaml:"replicas"`
+	DefalutGroup   string `yaml:"default_group"`   //默认节点名称
+	RegisterCenter string `yaml:"register_center"` //注册中心
 }
 
 func LoadConfig(path string) (*Config, error) {

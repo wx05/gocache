@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 func (p *HTTPPool) Log(format string, v ...interface{}) {
@@ -54,12 +55,40 @@ type HTTPPool struct {
 	mu          sync.Mutex
 	peers       *consistenthash.Map    //一致性哈希算法的 Map，用来根据具体的 key 选择节点
 	httpGetters map[string]*httpGetter //映射远程节点与对应的 httpGetter
+	registerURL string                 //注册中心地址
 }
 
 func NewHTTPPool(self string, c *Config) *HTTPPool {
-	return &HTTPPool{
-		self:     self,
-		basePath: c.Server.BasePath,
+	p := &HTTPPool{
+		self:        self,
+		basePath:    c.Server.BasePath,
+		registerURL: c.Server.RegisterCenter,
+	}
+	go autoRegister(self, c)
+	return p
+}
+
+// 自动注册逻辑
+func autoRegister(self string, c *Config) {
+	//每隔五秒钟去注册一次
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			//request 请求
+			body := strings.NewReader(self)
+			resp, err := http.Post(c.Server.RegisterCenter, "text/plain", body)
+			if err == nil {
+				err := resp.Body.Close()
+				if err != nil {
+					log.Fatalf("register error:%s %s:err:%s", self, c.Server.RegisterCenter, err.Error())
+				}
+			} else {
+				log.Fatalf("register error:%s %s: err:%s", self, c.Server.RegisterCenter, err.Error())
+			}
+		}
 	}
 }
 
