@@ -43,20 +43,44 @@ func (r *RegisterCenter) handleServe(writer http.ResponseWriter, request *http.R
 	writer.WriteHeader(http.StatusOK)
 }
 
+// 检查节点健康状态
 func (r *RegisterCenter) checkNodesHealth() {
 	for {
+
 		r.mu.RLock()
+		addrs := make(map[string]time.Time, 0)
 		for addr, kickTime := range r.nodes {
-			log.Println(time.Since(kickTime) > 5*time.Second, addr)
-			if time.Since(kickTime) > 5*time.Second {
-				r.mu.Lock()
-				delete(r.nodes, addr)
-				r.mu.Unlock()
-				log.Printf("[ERROR] nodes offline : %s, last kick time: %s", addr, kickTime)
-			}
+			addrs[addr] = kickTime
 		}
 		r.mu.RUnlock()
-		time.Sleep(3 * time.Second) //sleep 3秒之后再运行
+
+		if len(addrs) > 0 {
+			for k, v := range addrs {
+				r.mu.Lock()
+				if time.Since(v) > 10*time.Second {
+					delete(r.nodes, k)
+					log.Printf("[ERROR] nodes offline : %s, last kick time: %s", k, v)
+				}
+				r.mu.Unlock()
+			}
+		}
+
+		/*
+			这里锁升级会导致死锁
+			r.mu.RLock()
+			for addr, kickTime := range r.nodes {
+				log.Println(time.Since(kickTime) > 5*time.Second, addr)
+				if time.Since(kickTime) > 5*time.Second {
+					r.mu.Lock()
+					delete(r.nodes, addr)
+					r.mu.Unlock()
+					log.Printf("[ERROR] nodes offline : %s, last kick time: %s", addr, kickTime)
+				}
+			}
+			r.mu.RUnlock()
+			time.Sleep(3 * time.Second) //sleep 3秒之后再运行
+		*/
+
 	}
 }
 
