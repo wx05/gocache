@@ -1,0 +1,16 @@
+[
+  {
+    "group":"scores",
+    "data":{
+      "Tom":"90",
+      "Jack": "20"
+    }
+  },
+  {
+    "group":"class",
+    "data": {
+      "Tom":"class 2",
+      "Jack": "class 3"
+    }
+  }
+]
