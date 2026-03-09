@@ -18,6 +18,14 @@ type Cache struct {
 	onEvicted func(key string, value Value) //对于淘汰的数据处理时的回调函数
 }
 
+//DDD
+
+//服务注册、发现
+
+//k8s docker compose
+
+//JWP
+
 // ll 里面的成员结构
 type entry struct {
 	key   string

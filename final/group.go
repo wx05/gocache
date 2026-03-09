@@ -2,7 +2,7 @@ package final
 
 import (
 	"fmt"
-	"gocache/day6/singleflight"
+	"gocache/final/singleflight"
 	"log"
 	"sync"
 )

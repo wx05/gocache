@@ -2,7 +2,7 @@ package final
 
 import (
 	"fmt"
-	"gocache/day6/consistenthash"
+	"gocache/final/consistenthash"
 	"io"
 	"log"
 	"net/http"
